@@ -14,8 +14,6 @@ class Major(Base):
     students: Mapped[list["Student"]] = relationship("Student", back_populates="major")
     extend_existing = True
 
-    def __str__(self):
-        return f"{self.__class__.__name__}(id={self.id}, major_name={self.major_name!r})"
-
     def __repr__(self):
-        return str(self)
+        return f"{self.__class__.__name__}({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items() if not k.startswith('_'))})"
+

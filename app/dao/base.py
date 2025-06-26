@@ -7,6 +7,8 @@ from app.database import async_session_maker
 class BaseDAO:
     model = None
 
+
+    # filter_by - способ фильтрации по указанному столбцу
     @classmethod
     async def find_one_or_none_by_id(cls, data_id: int):
         """
@@ -20,7 +22,9 @@ class BaseDAO:
         """
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=data_id)
+            # execute
             result = await session.execute(query)
+            # scalar_one_or_none - возвращает либо один экземпляр, либо None
             return result.scalar_one_or_none()
 
     @classmethod
@@ -73,6 +77,7 @@ class BaseDAO:
                 try:
                     await session.commit()
                 except SQLAlchemyError as e:
+                # rollback - откатывает транзакцию при ошибке
                     await session.rollback()
                     raise e
                 return new_instance
@@ -92,6 +97,7 @@ class BaseDAO:
         async with async_session_maker() as session:
             async with session.begin():
                 new_instances = [cls.model(**values) for values in instances]
+                # add_all - добавляет несколько объектов в сессию для последующего сохранения в БД
                 session.add_all(new_instances)
                 try:
                     await session.commit()
@@ -127,6 +133,7 @@ class BaseDAO:
                 except SQLAlchemyError as e:
                     await session.rollback()
                     raise e
+                    # rowcount - Это свойство результата запроса, показывает сколько строк затронул запрос (например, INSERT, UPDATE, DELETE).
                 return result.rowcount
 
     @classmethod

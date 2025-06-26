@@ -1,3 +1,5 @@
+# Модель данных для передачи тела запроса request_body. Не уверен что он вообще нужен
+
 class RBStudent:
     def __init__(self, student_id: int | None = None,
                  course: int | None = None,

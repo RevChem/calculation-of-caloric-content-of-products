@@ -7,6 +7,7 @@ from app.students.models import Student
 from app.database import async_session_maker
 
 
+# Эти декораторы должны вызываться раньше любых методов при импорте модулей
 @event.listens_for(Student, 'after_insert')
 def receive_after_insert(mapper, connection, target):
     major_id = target.major_id
@@ -64,14 +65,22 @@ class StudentDAO(BaseDAO):
             return student_data
 
     @classmethod
-    async def add_student(cls, **student_data: dict):
-        async with async_session_maker() as session:
-            async with session.begin():
-                new_student = cls.model(**student_data)
-                session.add(new_student)
-                await session.flush()
-                new_student_id = new_student.id
-                await session.commit()
+    async def add_student(cls, **student_data: dict):  
+        # Создаём асинхронную сессию работы с БД
+        async with async_session_maker() as session:   
+            # Начинаем транзакцию (BEGIN). При ошибке — произойдёт ROLLBACK
+            async with session.begin():                
+                # Создаём новый объект модели на основе переданных данных
+                new_student = cls.model(**student_data) 
+                # Добавляем объект в сессию (ещё не в БД)
+                session.add(new_student)                
+                # Отправляем данные в БД, чтобы получить сгенерированные значения 
+                await session.flush()                  
+                # Сохраняем сгенерированный id нового студента 
+                new_student_id = new_student.id        
+                # Зафиксировать изменения в БД (COMMIT транзакции)
+                await session.commit()                  
+                # Возвращаем id созданного студента
                 return new_student_id
 
     @classmethod

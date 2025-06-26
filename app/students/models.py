@@ -1,8 +1,21 @@
+"""
+
+Mapped[] - Тип для аннотации отображаемых атрибутов
+
+mapped_column() - Определяет колонку БД и её параметры
+
+Annotated - Связывает тип и метаданные (для переиспользования). Позволяет объединить тип (Mapped) и метаданные (например, ограничения или типы БД) в одной аннотации
+
+Field - Дополнительные параметры отображения (init, repr и др.)
+
+"""
+
 from sqlalchemy.orm import relationship
-from sqlalchemy import ForeignKey, text, Text
+from sqlalchemy import ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base, str_uniq, int_pk, str_null_true
 from datetime import date
+from app.food.models import Food
 
 
 # создаем модель таблицы студентов
@@ -19,19 +32,19 @@ class Student(Base):
     photo: Mapped[str] = mapped_column(Text, nullable=True)
     special_notes: Mapped[str_null_true]
     major_id: Mapped[int] = mapped_column(ForeignKey("majors.id"), nullable=False)
+    food_id: Mapped[int | None] = mapped_column(ForeignKey("foods.id"), nullable=True)
 
     # Определяем отношения: один студент имеет один факультет
     major: Mapped["Major"] = relationship("Major", back_populates="students")
+    food: Mapped["Food"] = relationship("Food", back_populates="students")
+
     extend_existing = True
 
-    def __str__(self):
-        return (f"{self.__class__.__name__}(id={self.id}, "
-                f"first_name={self.first_name!r},"
-                f"last_name={self.last_name!r})")
-
     def __repr__(self):
-        return str(self)
+        return f"{self.__class__.__name__}({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items() if not k.startswith('_'))})"
 
+
+# преобразует объект модели (например, пользователя) в словарь, где ключи — это названия полей, а значения — данные из объекта. Удобно использовать с библиотекой pydantic. Явно указываются какие поля будут включены
     def to_dict(self):
         return {
             "id": self.id,
@@ -45,5 +58,6 @@ class Student(Base):
             "course": self.course,
             "special_notes": self.special_notes,
             "major_id": self.major_id,
+            "food_id": self.food_id,
             'photo': self.photo
         }
