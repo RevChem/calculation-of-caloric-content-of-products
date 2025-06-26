@@ -47,8 +47,8 @@ def get_calories(food_name: str):
 @router.post("/predict/")
 async def predict(
     file: UploadFile = File(...),
-    id: int = Form(...),  # Получаем из формы
-    product_name: str = Form(...)  # Получаем из формы
+    #id: int = Form(...),  # Получаем из формы
+    #product_name: str = Form(...)  # Получаем из формы
 ):
     # Проверка типа файла
     if not file.content_type.startswith('image/'):
@@ -79,7 +79,6 @@ async def predict(
                 calories = get_calories(food_type)
                 await FoodDAO.add(
                     session=session,
-                    id = id,
                     product_name = food_type,
                     calories = calories,
                 )

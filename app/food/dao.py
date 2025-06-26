@@ -9,9 +9,9 @@ class FoodDAO(BaseDAO):
     model = Food
 
     @staticmethod
-    async def add(session: AsyncSession, id: int, product_name: str, calories: float):
+    async def add(session: AsyncSession, product_name: str, calories: float):
         food_entry = Food(
-            id = id,
+            #id = id,
             product_name = product_name,
             calories = calories
         )

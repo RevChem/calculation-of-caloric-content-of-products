@@ -1,5 +1,7 @@
 import os
+import ssl   # Библиотека для шифрования (безопасного обмена данными между клиентом и сервером)
 import redis
+from celery import Celery
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +23,11 @@ class Settings(BaseSettings):
 settings = Settings()
 
 redis_url = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0"
+
+celery_app = Celery("celery_worker", broker=redis_url, backend=redis_url)
+ssl_options = {"ssl_cert_reqs": ssl.CERT_NONE}
+celery_app.conf.update(broker_use_ssl=ssl_options, redis_backend_use_ssl=ssl_options)
+
 
 redis_client = redis.Redis(host=settings.REDIS_HOST,
                            port=settings.REDIS_PORT,

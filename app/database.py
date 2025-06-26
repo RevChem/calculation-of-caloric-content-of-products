@@ -36,4 +36,4 @@ class Base(AsyncAttrs, DeclarativeBase):
         return f"{cls.__name__.lower()}s"
 
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    #updated_at: Mapped[updated_at]
