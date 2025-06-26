@@ -80,7 +80,8 @@ async def predict(
                 await FoodDAO.add(
                     session=session,
                     id = id,
-                    product_name = food_type
+                    product_name = food_type,
+                    calories = calories,
                 )
             await session.commit()
 

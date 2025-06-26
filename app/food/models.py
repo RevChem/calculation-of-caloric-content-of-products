@@ -7,6 +7,7 @@ from app.food.sql_enums import Product
 class Food(Base):
     id: Mapped[int_pk]
     product_name: Mapped[str] # Mapped[Product] = mapped_column(default = Product.beet)
+    calories: Mapped[int | None] = mapped_column(nullable=True)
 
     students: Mapped["Student"] = relationship("Student", back_populates="food")
     extend_existing = True
